@@ -12,6 +12,7 @@ import fr.tse.fi2.hpp.labs.beans.measure.QueryProcessorMeasure;
 import fr.tse.fi2.hpp.labs.dispatcher.StreamingDispatcher;
 import fr.tse.fi2.hpp.labs.queries.AbstractQueryProcessor;
 import fr.tse.fi2.hpp.labs.queries.impl.IncrementalAveragePrice;
+import fr.tse.fi2.hpp.labs.queries.impl.StupidAveragePrice;
 
 /**
  * Main class of the program. Register your new queries here
@@ -33,12 +34,13 @@ public class MainStreaming {
         // Init query time measure
         final QueryProcessorMeasure measure = new QueryProcessorMeasure();
         // Init dispatcher
-        final StreamingDispatcher dispatch = new StreamingDispatcher("src/main/resources/data/1000Records.csv");
+        final StreamingDispatcher dispatch = new StreamingDispatcher("src/main/resources/data/100k.csv");
 
         // Query processors
         final List<AbstractQueryProcessor> processors = new ArrayList<>();
         // Add you query processor here
         processors.add(new IncrementalAveragePrice(measure));
+        processors.add(new StupidAveragePrice(measure));
         // Register query processors
         for (final AbstractQueryProcessor queryProcessor : processors) {
             dispatch.registerQueryProcessor(queryProcessor);

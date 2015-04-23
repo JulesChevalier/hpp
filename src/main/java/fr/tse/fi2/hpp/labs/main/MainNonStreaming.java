@@ -33,7 +33,7 @@ public class MainNonStreaming {
         // Init query time measure
         final QueryProcessorMeasure measure = new QueryProcessorMeasure();
         // Init dispatcher and load everything
-        final LoadFirstDispatcher dispatch = new LoadFirstDispatcher("src/main/resources/data/1000Records.csv");
+        final LoadFirstDispatcher dispatch = new LoadFirstDispatcher("src/main/resources/data/100k.csv");
         logger.info("Finished parsing");
         // Query processors
         final List<AbstractQueryProcessor> processors = new ArrayList<>();
