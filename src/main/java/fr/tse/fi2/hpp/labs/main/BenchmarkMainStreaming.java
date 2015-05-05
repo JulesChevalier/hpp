@@ -45,6 +45,8 @@ public class BenchmarkMainStreaming {
 
     private static RouteMembershipProcessor processor;
 
+    protected static DebsRecord rndRecord;
+
     /**
      * @param args
      * @throws IOException
@@ -93,29 +95,28 @@ public class BenchmarkMainStreaming {
         measure.setProcessedRecords(dispatch.getRecords());
         measure.outputMeasure();
 
+        rndRecord = processor.getRandomRecord();
+
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public boolean searchPickupPoint() {
-        final DebsRecord record = processor.getRandomRecord();
-        return processor.existsPickupPoint(record.getPickup_longitude(), record.getPickup_latitude());
+        return processor.existsPickupPoint(rndRecord.getPickup_longitude(), rndRecord.getPickup_latitude());
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public boolean searchDropoffPoint() {
-        final DebsRecord record = processor.getRandomRecord();
-        return processor.existsPickupPoint(record.getDropoff_longitude(), record.getDropoff_latitude());
+        return processor.existsPickupPoint(rndRecord.getDropoff_longitude(), rndRecord.getDropoff_latitude());
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
     public boolean searchTaxiLicense() {
-        final DebsRecord record = processor.getRandomRecord();
-        return processor.existsTaxiLicense(record.getHack_license());
+        return processor.existsTaxiLicense(rndRecord.getHack_license());
     }
 }
