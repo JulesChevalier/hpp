@@ -6,14 +6,20 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.tse.fi2.hpp.labs.beans.DebsRecord;
 import fr.tse.fi2.hpp.labs.beans.measure.QueryProcessorMeasure;
 import fr.tse.fi2.hpp.labs.dispatcher.StreamingDispatcher;
 import fr.tse.fi2.hpp.labs.queries.AbstractQueryProcessor;
@@ -28,19 +34,24 @@ import fr.tse.fi2.hpp.labs.queries.impl.RouteMembershipProcessor;
  * 
  */
 @State(Scope.Thread)
-@Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
-@Measurement(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(5)
-public class MainStreaming {
+@Warmup(iterations = 5)
+@Measurement(iterations = 5)
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.MILLISECONDS)
+public class BenchmarkMainStreaming {
 
-    final static Logger logger = LoggerFactory.getLogger(MainStreaming.class);
+    final static Logger logger = LoggerFactory.getLogger(BenchmarkMainStreaming.class);
+
+    private static RouteMembershipProcessor processor;
 
     /**
      * @param args
      * @throws IOException
      */
 
-    public static void main(final String[] args) throws IOException {
+    @Setup
+    public static void loadData() {
         // Init query time measure
         final QueryProcessorMeasure measure = new QueryProcessorMeasure();
         // Init dispatcher
@@ -49,7 +60,8 @@ public class MainStreaming {
         // Query processors
         final List<AbstractQueryProcessor> processors = new ArrayList<>();
         // Add you query processor here
-        processors.add(new RouteMembershipProcessor(measure));
+        processor = new RouteMembershipProcessor(measure);
+        processors.add(processor);
         // Register query processors
         for (final AbstractQueryProcessor queryProcessor : processors) {
             dispatch.registerQueryProcessor(queryProcessor);
@@ -83,4 +95,27 @@ public class MainStreaming {
 
     }
 
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    public boolean searchPickupPoint() {
+        final DebsRecord record = processor.getRandomRecord();
+        return processor.existsPickupPoint(record.getPickup_longitude(), record.getPickup_latitude());
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    public boolean searchDropoffPoint() {
+        final DebsRecord record = processor.getRandomRecord();
+        return processor.existsPickupPoint(record.getDropoff_longitude(), record.getDropoff_latitude());
+    }
+
+    @Benchmark
+    @BenchmarkMode(Mode.AverageTime)
+    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+    public boolean searchTaxiLicense() {
+        final DebsRecord record = processor.getRandomRecord();
+        return processor.existsTaxiLicense(record.getHack_license());
+    }
 }
