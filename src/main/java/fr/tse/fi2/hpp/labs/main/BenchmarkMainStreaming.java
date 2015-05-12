@@ -23,7 +23,9 @@ import fr.tse.fi2.hpp.labs.beans.DebsRecord;
 import fr.tse.fi2.hpp.labs.beans.measure.QueryProcessorMeasure;
 import fr.tse.fi2.hpp.labs.dispatcher.StreamingDispatcher;
 import fr.tse.fi2.hpp.labs.queries.AbstractQueryProcessor;
-import fr.tse.fi2.hpp.labs.queries.impl.RouteMembershipProcessor;
+import fr.tse.fi2.hpp.labs.queries.impl.RecordBloomMembershipProcessor;
+import fr.tse.fi2.hpp.labs.queries.impl.RecordMembershipProcessor;
+import fr.tse.fi2.hpp.labs.queries.impl.RecordMixMembershipProcessor;
 
 /**
  * Main class of the program. Register your new queries here
@@ -43,7 +45,9 @@ public class BenchmarkMainStreaming {
 
     final static Logger logger = LoggerFactory.getLogger(BenchmarkMainStreaming.class);
 
-    private static RouteMembershipProcessor processor;
+    private static RecordMembershipProcessor processor;
+    private static RecordBloomMembershipProcessor bprocessor;
+    private static RecordMixMembershipProcessor mprocessor;
 
     protected static DebsRecord rndRecord;
 
@@ -62,8 +66,12 @@ public class BenchmarkMainStreaming {
         // Query processors
         final List<AbstractQueryProcessor> processors = new ArrayList<>();
         // Add you query processor here
-        processor = new RouteMembershipProcessor(measure);
+        processor = new RecordMembershipProcessor(measure);
+        bprocessor = new RecordBloomMembershipProcessor(measure);
+        mprocessor = new RecordMixMembershipProcessor(measure);
         processors.add(processor);
+        processors.add(bprocessor);
+        processors.add(mprocessor);
         // Register query processors
         for (final AbstractQueryProcessor queryProcessor : processors) {
             dispatch.registerQueryProcessor(queryProcessor);
@@ -102,21 +110,21 @@ public class BenchmarkMainStreaming {
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
-    public boolean searchPickupPoint() {
-        return processor.existsPickupPoint(rndRecord.getPickup_longitude(), rndRecord.getPickup_latitude());
+    public boolean search() {
+        return processor.exists(rndRecord);
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
-    public boolean searchDropoffPoint() {
-        return processor.existsPickupPoint(rndRecord.getDropoff_longitude(), rndRecord.getDropoff_latitude());
+    public boolean searchBloom() {
+        return bprocessor.exists(rndRecord);
     }
 
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     @OutputTimeUnit(TimeUnit.MILLISECONDS)
-    public boolean searchTaxiLicense() {
-        return processor.existsTaxiLicense(rndRecord.getHack_license());
+    public boolean searchMix() {
+        return mprocessor.exists(rndRecord);
     }
 }
