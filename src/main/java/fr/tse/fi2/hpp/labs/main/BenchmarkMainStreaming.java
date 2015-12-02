@@ -36,9 +36,9 @@ import fr.tse.fi2.hpp.labs.queries.impl.RecordMixMembershipProcessor;
  * 
  */
 @State(Scope.Thread)
-@Fork(5)
-@Warmup(iterations = 5)
-@Measurement(iterations = 5)
+@Fork(1)
+@Warmup(iterations = 1)
+@Measurement(iterations = 1)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BenchmarkMainStreaming {

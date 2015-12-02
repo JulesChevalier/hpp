@@ -1,4 +1,4 @@
-package fr.tse.fi2.hpp.labs.utils;
+package fr.tse.fi2.hpp.labs.test;
 
 import java.util.HashSet;
 import java.util.Random;
@@ -6,12 +6,15 @@ import java.util.Random;
 import org.junit.Assert;
 import org.junit.Test;
 
+import fr.tse.fi2.hpp.labs.utils.BloomFilter;
+import fr.tse.fi2.hpp.labs.utils.RandomString;
+
 public class TestBloomFilter {
 
     @Test
     public void testBloom() {
 
-        final int n = 2_000_000;
+        final int n = 100_000;
         final String[] wordsIn = new String[n];
         final String[] wordsNotIn = new String[n];
 

@@ -7,7 +7,7 @@ import com.google.common.hash.Hashing;
 
 public class BloomFilter {
 
-    public static final int SALT_SIZE = 100;
+    public static final int SALT_SIZE = 10;
     public static final double ERROR_P = 0.1;
 
     public final int n;
